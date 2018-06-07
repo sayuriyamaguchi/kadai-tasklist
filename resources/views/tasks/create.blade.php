@@ -20,11 +20,9 @@
                     {!! Form::text('content', null, ['class' => 'form-control']) !!}
                 </div>
                 
-             </form>
                     {!! Form::submit('投稿', ['class' => 'btn btn-primary']) !!}
         
             {!! Form::close() !!}
-        </form>
         </div>
     </div>
 @endsection
