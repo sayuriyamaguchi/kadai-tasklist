@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Task; 
 
 class TasksController extends Controller
@@ -13,14 +12,18 @@ class TasksController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-     
-     
-public function index()
+    public function index()
     {
        $data = [];
         if (\Auth::check()) {
-           $tasks = Task::all();
-
+        $user=\Auth::user();
+        $tasks = $user->tasks()->paginate(10);
+        
+        $data = [
+            'user' => $user,
+            'task' => $tasks,
+            ];
+            
         return view('tasks.index', [
             'tasks' => $tasks,
         ]);
@@ -37,9 +40,11 @@ public function index()
     public function create()
     {
         $task = new Task;
+
         return view('tasks.create', [
             'task' => $task,
         ]);
+
     }
 
     /**
@@ -50,18 +55,18 @@ public function index()
      */
     public function store(Request $request)
     {
-        
-        $this->validate($request, [
-            'status' => 'required|max:10',   // add
+         $this->validate($request, [
+            'status' => 'required|max:10',  
             'content' => 'required|max:191',
         ]);
-        
+
         $request->user()->tasks()->create([
             'content' => $request->content,
-            'status' => $request ->status,
+            'status' => $request->status,
         ]);
 
         return redirect('/');
+
     }
 
     /**
@@ -72,11 +77,12 @@ public function index()
      */
     public function show($id)
     {
-        $task = Task::find($id);
+         $task = Task::find($id);
 
         return view('tasks.show', [
             'task' => $task,
         ]);
+
     }
 
     /**
@@ -92,6 +98,7 @@ public function index()
         return view('tasks.edit', [
             'task' => $task,
         ]);
+
     }
 
     /**
@@ -103,20 +110,18 @@ public function index()
      */
     public function update(Request $request, $id)
     {
-        
-          $this->validate($request, [
+         $this->validate($request, [
             'status' => 'required|max:10',   // add
             'content' => 'required|max:191',
         ]);
 
-        
         $task = Task::find($id);
+        $task->status = $request->status; 
         $task->content = $request->content;
-        $task->status = $request->status;
         $task->save();
 
-
         return redirect('/');
+
     }
 
     /**
@@ -131,5 +136,6 @@ public function index()
         $task->delete();
 
         return redirect('/');
+
     }
 }
