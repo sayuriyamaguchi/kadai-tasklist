@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Task; 
+use App\Task;
 
 class TasksController extends Controller
 {
@@ -77,12 +77,18 @@ class TasksController extends Controller
      */
     public function show($id)
     {
-         $task = Task::find($id);
-
+        $task = Task::find($id);
+        
+        if (\Auth::id() === $task->user_id) {
         return view('tasks.show', [
             'task' => $task,
         ]);
-
+        }
+    
+        else{
+        return redirect('/');
+        }
+    
     }
 
     /**
@@ -91,14 +97,18 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+     
     public function edit($id)
     {
+        
         $task = Task::find($id);
-
+        if (\Auth::id() === $task->user_id) {
         return view('tasks.edit', [
             'task' => $task,
         ]);
-
+    }
+    else
+            return redirect('/');
     }
 
     /**
